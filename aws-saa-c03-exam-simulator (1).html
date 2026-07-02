@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Certified Solutions Architect – Associate (SAA-C03) — K21 Academy Exam Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & TOKENS ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green:      #8DC63F;
+  --green-mid:  #79B030;
+  --green-bg:   #F1F8E8;
+  --green-dark: #4A7A1B;
+  --navy:       #1A1248;
+  --navy-mid:   #2E2080;
+  --navy-light: #F0EEF8;
+  --bg:         #F0F2F5;
+  --surface:    #FFFFFF;
+  --border:     #DDE1E8;
+  --text-1:     #111827;
+  --text-2:     #4B5563;
+  --text-3:     #9CA3AF;
+  --orange:     #FF9900;
+  --orange-dk:  #E07B00;
+  --red:        #DC2626;
+  --red-bg:     #FEF2F2;
+  --amber:      #D97706;
+  --amber-bg:   #FFFBEB;
+  --correct:    #16A34A;
+  --correct-bg: #F0FDF4;
+  --wrong:      #DC2626;
+  --wrong-bg:   #FEF2F2;
+  --radius:     10px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.10);
+}
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-1); -webkit-font-smoothing: antialiased; }
+button { font-family: 'DM Sans', sans-serif; }
+
+/* ===== TOP HEADER BAR ===== */
+.exam-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 58px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.25);
+}
+.exam-header-logo { display: flex; align-items: center; gap: 12px; }
+.exam-header-logo .logo-badge {
+  background: var(--green); color: #fff; font-weight: 800;
+  font-size: 12px; padding: 4px 9px; border-radius: 6px; letter-spacing: .04em;
+}
+.exam-header-logo .exam-title { color: #fff; font-size: 13.5px; font-weight: 600; line-height: 1.3; }
+.exam-header-logo .exam-title span { color: var(--green); }
+.exam-header-meta { display: flex; align-items: center; gap: 20px; }
+.meta-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 8px; padding: 5px 12px; color: #fff; font-size: 13px; font-weight: 500;
+}
+.meta-pill .label { color: rgba(255,255,255,.55); font-size: 11px; font-weight: 500; margin-right: 2px; }
+.meta-pill.timer-pill { min-width: 110px; }
+.timer-val { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.timer-val.warning { color: #F87171; animation: blink .8s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* ===== LAYOUT ===== */
+.exam-layout {
+  display: flex; padding-top: 58px; min-height: 100vh;
+}
+.exam-main {
+  flex: 1; min-width: 0;
+  padding: 28px 28px 120px 28px;
+  max-width: 900px;
+}
+.exam-sidebar {
+  width: 280px; flex-shrink: 0;
+  padding: 20px 16px 80px 0;
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto;
+}
+
+/* ===== QUESTION CARD ===== */
+.question-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 28px 30px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn .22s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.q-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+.q-num-badge {
+  background: var(--navy); color: #fff; font-size: 12px; font-weight: 700;
+  padding: 4px 12px; border-radius: 100px;
+}
+.q-tags { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+.domain-tag {
+  background: var(--navy-light); color: var(--navy-mid); font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 100px; letter-spacing: .02em;
+}
+.multi-tag {
+  background: #FFF3CD; color: #7B5000; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 100px;
+}
+
+.question-text {
+  font-size: 15.5px; font-weight: 600; line-height: 1.65; color: var(--text-1);
+  margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1.5px solid var(--border);
+}
+.multi-notice {
+  background: #FFF8E7; border: 1px solid #FFD97A; border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; font-weight: 600; color: #7B5000;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+
+/* OPTIONS */
+.options-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.option-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; border: 2px solid var(--border);
+  border-radius: 10px; cursor: pointer; background: #FAFBFC;
+  transition: border-color .18s, background .18s, transform .12s;
+  user-select: none;
+}
+.option-item:hover { border-color: var(--navy-mid); background: var(--navy-light); transform: translateX(2px); }
+.option-item.selected { border-color: var(--navy); background: var(--navy-light); }
+.option-item.correct-ans { border-color: var(--correct); background: var(--correct-bg); }
+.option-item.wrong-ans   { border-color: var(--wrong);   background: var(--wrong-bg);   }
+.option-item.no-select   { cursor: default; }
+.option-item.no-select:hover { transform: none; }
+
+.opt-letter {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; margin-top: 1px;
+  background: var(--border); color: var(--text-2);
+  transition: background .18s, color .18s;
+}
+.option-item.selected .opt-letter { background: var(--navy); color: #fff; }
+.option-item.correct-ans .opt-letter { background: var(--correct); color: #fff; }
+.option-item.wrong-ans   .opt-letter { background: var(--wrong); color: #fff; }
+
+.opt-label { font-size: 14.5px; line-height: 1.55; color: var(--text-1); flex: 1; padding-top: 2px; }
+.opt-icon { font-size: 17px; margin-top: 3px; flex-shrink: 0; }
+
+/* EXPLANATION */
+.explanation-box {
+  margin-top: 20px; padding: 16px 18px;
+  background: #EFF6FF; border: 1.5px solid #BFDBFE;
+  border-radius: 10px; display: none;
+}
+.explanation-box.show { display: block; }
+.exp-header { font-size: 13px; font-weight: 800; color: #1D4ED8; margin-bottom: 6px; letter-spacing: .02em; }
+.exp-text { font-size: 14px; line-height: 1.65; color: #1E3A8A; }
+
+/* Q NAV BUTTONS */
+.q-nav-btns {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 24px; flex-wrap: wrap; gap: 12px;
+}
+.btn-flag {
+  display: flex; align-items: center; gap: 7px;
+  background: transparent; border: 2px solid var(--amber);
+  color: var(--amber); font-size: 13px; font-weight: 700;
+  padding: 9px 16px; border-radius: 8px; cursor: pointer;
+  transition: background .18s, color .18s;
+}
+.btn-flag:hover, .btn-flag.flagged { background: var(--amber-bg); }
+.btn-flag.flagged { border-color: var(--amber); color: var(--amber); }
+.btn-flag.flagged::before { content: '🚩 '; }
+
+.btn-nav {
+  background: var(--navy); color: #fff; border: none;
+  font-size: 14px; font-weight: 700; padding: 11px 22px;
+  border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: background .18s, transform .12s;
+}
+.btn-nav:hover { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-nav:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+.btn-nav.prev { background: var(--surface); color: var(--navy); border: 2px solid var(--border); }
+.btn-nav.prev:hover { border-color: var(--navy); }
+
+/* ===== SIDEBAR ===== */
+.sidebar-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 16px; margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.sidebar-title { font-size: 11.5px; font-weight: 800; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 12px; }
+
+/* Question Navigator Grid */
+.nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+.nav-btn {
+  width: 100%; aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 700; border-radius: 7px;
+  cursor: pointer; border: 2px solid var(--border);
+  background: var(--surface); color: var(--text-2);
+  transition: all .15s; position: relative;
+}
+.nav-btn:hover { border-color: var(--navy); color: var(--navy); }
+.nav-btn.current { border-color: var(--navy); background: var(--navy); color: #fff; }
+.nav-btn.answered { border-color: var(--green); background: var(--green-bg); color: var(--green-dark); }
+.nav-btn.flagged-q { border-color: var(--amber); }
+.nav-btn.flagged-q::after {
+  content: ''; position: absolute; top: 1px; right: 1px;
+  width: 6px; height: 6px; background: var(--amber); border-radius: 50%;
+}
+.nav-btn.answered.flagged-q { background: var(--green-bg); }
+.nav-btn.correct-r { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+.nav-btn.wrong-r   { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong);   }
+
+/* Legend */
+.legend { display: flex; flex-direction: column; gap: 7px; }
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; border: 1.5px solid transparent; }
+.ld-ans  { background: var(--green-bg); border-color: var(--green); }
+.ld-cur  { background: var(--navy); border-color: var(--navy); }
+.ld-flag { background: var(--surface); border-color: var(--amber); position:relative; }
+.ld-flag::after { content:''; position:absolute; top:-1px; right:-1px; width:5px; height:5px; background:var(--amber); border-radius:50%; }
+.ld-unan { background: var(--surface); border-color: var(--border); }
+
+/* Stats */
+.stat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--text-2); }
+.stat-val { font-weight: 700; color: var(--text-1); }
+
+/* Submit button in sidebar */
+.btn-submit-sidebar {
+  width: 100%; padding: 13px; background: var(--green); color: #fff;
+  font-size: 14px; font-weight: 800; border: none; border-radius: 10px;
+  cursor: pointer; transition: background .18s, transform .12s;
+  letter-spacing: .01em;
+}
+.btn-submit-sidebar:hover { background: var(--green-mid); transform: translateY(-1px); }
+.btn-submit-sidebar:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ===== START SCREEN ===== */
+#start-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+.start-container {
+  background: var(--surface); border-radius: 20px; padding: 44px 40px;
+  max-width: 680px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,.12);
+  text-align: center;
+}
+.start-logo-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 28px; }
+.start-logo-badge { background: var(--navy); color: #fff; font-weight: 800; font-size: 14px; padding: 8px 14px; border-radius: 8px; }
+.start-logo-badge span { color: var(--green); }
+.cert-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--navy-light); color: var(--navy-mid); font-size: 12px; font-weight: 700;
+  padding: 5px 14px; border-radius: 100px; margin-bottom: 16px; letter-spacing: .04em;
+}
+.start-h1 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 10px; }
+.start-h1 span { color: var(--green-mid); }
+.start-sub { font-size: 15px; color: var(--text-2); line-height: 1.6; margin-bottom: 28px; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-bottom: 28px; }
+.info-item-box {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 14px 16px;
+}
+.info-item-box .i-label { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: .07em; text-transform: uppercase; margin-bottom: 4px; }
+.info-item-box .i-val { font-size: 15px; font-weight: 700; color: var(--text-1); }
+
+.domain-table { text-align: left; width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+.domain-table th { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: .07em; text-transform: uppercase; padding: 6px 10px; border-bottom: 2px solid var(--border); }
+.domain-table td { font-size: 13.5px; color: var(--text-2); padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.domain-table td:last-child { font-weight: 700; color: var(--navy-mid); text-align: right; }
+
+.rules-box { background: #FFF8E7; border: 1.5px solid #FFD97A; border-radius: 10px; padding: 14px 16px; text-align: left; margin-bottom: 28px; }
+.rules-box .rules-title { font-size: 12px; font-weight: 800; color: #7B5000; margin-bottom: 8px; letter-spacing: .04em; text-transform: uppercase; }
+.rules-box ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.rules-box li { font-size: 13px; color: #7B5000; display: flex; align-items: flex-start; gap: 8px; }
+.rules-box li::before { content: '⚠'; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+.btn-start {
+  width: 100%; padding: 16px; background: var(--green); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 800;
+  border: none; border-radius: 12px; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(141,198,63,.4);
+  transition: background .18s, transform .15s, box-shadow .18s;
+}
+.btn-start:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(141,198,63,.45); }
+
+/* ===== BLUR WARNING OVERLAY ===== */
+#blur-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(17,18,40,.93); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#blur-overlay.show { display: flex; }
+.blur-box {
+  background: var(--surface); border-radius: 16px; padding: 36px 32px;
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+.blur-icon { font-size: 48px; margin-bottom: 12px; }
+.blur-h { font-size: 20px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
+.blur-p { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 20px; }
+.blur-count-warning { background: var(--red-bg); border: 1.5px solid #FCA5A5; border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 20px; }
+.btn-return {
+  background: var(--navy); color: #fff; border: none;
+  padding: 13px 28px; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.btn-return:hover { background: var(--navy-mid); }
+
+/* ===== CONFIRM MODAL ===== */
+#confirm-modal {
+  display: none; position: fixed; inset: 0; z-index: 8888;
+  background: rgba(0,0,0,.6); align-items: center; justify-content: center; padding: 20px;
+}
+#confirm-modal.show { display: flex; }
+.modal-box {
+  background: var(--surface); border-radius: 14px; padding: 28px 30px;
+  max-width: 440px; width: 100%; box-shadow: 0 16px 50px rgba(0,0,0,.3);
+}
+.modal-title { font-size: 17px; font-weight: 800; color: var(--text-1); margin-bottom: 10px; }
+.modal-body { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 20px; }
+.modal-row { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-modal-cancel { background: var(--bg); border: 2px solid var(--border); color: var(--text-2); padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-modal-ok { background: var(--green); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.btn-modal-ok:hover { background: var(--green-mid); }
+.unanswered-list { background: var(--amber-bg); border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7B5000; margin-bottom: 14px; }
+
+/* ===== RESULTS SCREEN ===== */
+#result-screen {
+  display: none; min-height: 100vh; padding: 58px 20px 40px;
+}
+.result-wrapper { max-width: 800px; margin: 0 auto; padding: 28px 0; }
+.result-hero {
+  background: var(--surface); border-radius: 16px; padding: 32px 30px;
+  box-shadow: var(--shadow-md); text-align: center; margin-bottom: 20px; border: 1.5px solid var(--border);
+}
+.result-logo-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 22px; }
+.result-pass-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border-radius: 100px; font-size: 14px; font-weight: 800; margin-bottom: 12px;
+}
+.badge-pass { background: #D1FAE5; color: var(--correct); }
+.badge-fail { background: #FEE2E2; color: var(--red); }
+.result-pct { font-size: 60px; font-weight: 800; line-height: 1; margin: 8px 0; }
+.pct-pass { color: var(--correct); }
+.pct-fail { color: var(--red); }
+.result-scaled { font-size: 20px; font-weight: 700; color: var(--text-2); margin-bottom: 4px; }
+.result-scaled span { color: var(--text-1); font-weight: 800; }
+.result-correct-row { font-size: 14px; color: var(--text-3); margin-top: 6px; }
+.result-correct-row strong { color: var(--text-2); }
+
+.domain-breakdown {
+  background: var(--surface); border-radius: 16px; padding: 24px 26px;
+  box-shadow: var(--shadow-sm); margin-bottom: 20px; border: 1.5px solid var(--border);
+}
+.breakdown-title { font-size: 15px; font-weight: 800; color: var(--text-1); margin-bottom: 16px; }
+.domain-row-r {
+  display: grid; grid-template-columns: 1fr 80px 60px;
+  gap: 12px; align-items: center; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.domain-row-r:last-child { border-bottom: none; }
+.dr-name { font-size: 14px; color: var(--text-2); font-weight: 500; }
+.dr-score { font-size: 13.5px; color: var(--text-3); text-align: center; font-variant-numeric: tabular-nums; }
+.dr-pct { text-align: right; font-size: 13.5px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+.dr-good { background: #D1FAE5; color: var(--correct); }
+.dr-mid  { background: #FEF3C7; color: var(--amber); }
+.dr-bad  { background: #FEE2E2; color: var(--red); }
+
+.result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-retake {
+  background: var(--navy); color: #fff; border: none;
+  padding: 14px 32px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background .18s, transform .12s;
+}
+.btn-retake:hover { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-review {
+  background: var(--surface); color: var(--navy); border: 2px solid var(--navy);
+  padding: 14px 32px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background .18s, transform .12s;
+}
+.btn-review:hover { background: var(--navy-light); transform: translateY(-1px); }
+
+/* ===== REVIEW MODE ===== */
+#review-screen { display: none; padding: 80px 20px 60px; }
+.review-wrapper { max-width: 820px; margin: 0 auto; }
+.review-q-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 24px 26px; margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.review-q-card.rq-correct { border-left: 4px solid var(--correct); }
+.review-q-card.rq-wrong   { border-left: 4px solid var(--red); }
+.rq-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.rq-result-tag { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 100px; }
+.rq-correct-tag { background: #D1FAE5; color: var(--correct); }
+.rq-wrong-tag   { background: #FEE2E2; color: var(--red); }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar-wrap { height: 3px; background: rgba(255,255,255,.15); position: fixed; top: 58px; left: 0; right: 0; z-index: 199; }
+.progress-bar-fill { height: 100%; background: var(--green); transition: width .3s ease; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .exam-sidebar { display: none; }
+  .exam-main { padding: 20px 16px 100px; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+  .start-container { padding: 28px 20px; }
+}
+@media (max-width: 500px) {
+  .info-grid { grid-template-columns: 1fr; }
+  .exam-header-meta .meta-pill:not(.timer-pill) { display: none; }
+}
+
+/* Mobile bottom nav */
+.mobile-nav-bar {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
+  background: var(--surface); border-top: 1.5px solid var(--border);
+  padding: 10px 16px; gap: 10px; align-items: center; justify-content: space-between;
+}
+@media (max-width: 768px) { .mobile-nav-bar { display: flex; } }
+.mob-answered { font-size: 12px; color: var(--text-3); font-weight: 600; }
+.mob-answered strong { color: var(--text-1); }
+
+/* ===== PRINT HIDE ===== */
+@media print { #blur-overlay, #confirm-modal, .exam-header, .progress-bar-wrap { display: none !important; } }
+</style>
+
+</head>
+<body>
+
+<!-- ========== START / RULES SCREEN ========== -->
+<div id="start-screen">
+  <div class="start-container">
+    <div class="start-logo-row">
+      <div class="start-logo-badge">K21 <span>Academy</span></div>
+    </div>
+    <div class="cert-badge"><span>☁️</span> AWS Certification Exam Simulator</div>
+    <h1 class="start-h1">AWS Certified <span>Solutions Architect – Associate</span></h1>
+    <p class="start-sub">SAA-C03 &mdash; Practice in a real exam environment with a timer, question navigator, flagging, and instant feedback after submission.</p>
+
+    <div class="info-grid">
+      <div class="info-item-box"><div class="i-label">Questions</div><div class="i-val">65 Questions</div></div>
+      <div class="info-item-box"><div class="i-label">Time Limit</div><div class="i-val">130 Minutes</div></div>
+      <div class="info-item-box"><div class="i-label">Passing Score</div><div class="i-val">720 / 1000 (scaled)</div></div>
+      <div class="info-item-box"><div class="i-label">Question Types</div><div class="i-val">Single &amp; Multi-select</div></div>
+    </div>
+
+    <table class="domain-table">
+      <thead><tr><th>Domain</th><th>Topic</th><th>Weight</th></tr></thead>
+      <tbody>
+        <tr><td>Domain 1</td><td>Design Secure Architectures</td><td>30%</td></tr>
+        <tr><td>Domain 2</td><td>Design Resilient Architectures</td><td>26%</td></tr>
+        <tr><td>Domain 3</td><td>Design High-Performing Architectures</td><td>24%</td></tr>
+        <tr><td>Domain 4</td><td>Design Cost-Optimized Architectures</td><td>20%</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rules-box">
+      <div class="rules-title">⚠ Exam Rules — Read Before Starting</div>
+      <ul>
+        <li>Do NOT switch tabs or minimize the browser — your exam will be paused and a warning issued.</li>
+        <li>3 tab-switch warnings will automatically end and submit your exam.</li>
+        <li>Multi-select questions require you to choose the exact number of correct answers indicated. Partial credit is not given.</li>
+        <li>You can flag questions for review and return to them before submitting.</li>
+        <li>When the timer reaches zero, your exam is submitted automatically.</li>
+        <li>Once submitted, answers cannot be changed.</li>
+      </ul>
+    </div>
+
+    <button class="btn-start" onclick="startExam()">▶ Start Exam Now</button>
+  </div>
+</div>
+
+<!-- ========== EXAM UI ========== -->
+<div id="exam-ui" style="display:none;">
+  <header class="exam-header">
+    <div class="exam-header-logo">
+      <div class="logo-badge">K21</div>
+      <div class="exam-title">AWS SAA-C03 — <span>Solutions Architect Associate</span></div>
+    </div>
+    <div class="exam-header-meta">
+      <div class="meta-pill"><span class="label">Answered</span><span id="hdr-answered">0/65</span></div>
+      <div class="meta-pill"><span class="label">Flagged</span><span id="hdr-flagged">0</span></div>
+      <div class="meta-pill timer-pill"><span>⏱</span><span class="timer-val" id="timer">130:00</span></div>
+    </div>
+  </header>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+
+  <div class="exam-layout">
+    <main class="exam-main">
+      <div id="question-container"></div>
+      <div class="q-nav-btns">
+        <button class="btn-nav prev" id="btn-prev" onclick="goToPrev()">← Prev</button>
+        <button class="btn-flag" id="btn-flag" onclick="toggleFlag(currentQ)">⚑ Flag for Review</button>
+        <button class="btn-nav" id="btn-next" onclick="goToNext()">Next →</button>
+      </div>
+    </main>
+
+    <aside class="exam-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Progress</div>
+        <div class="stat-row"><span class="stat-label">Answered</span><span class="stat-val" id="stat-answered">0 / 65</span></div>
+        <div class="stat-row"><span class="stat-label">Unanswered</span><span class="stat-val" id="stat-unanswered">65</span></div>
+        <div class="stat-row"><span class="stat-label">Flagged</span><span class="stat-val" id="stat-flagged">0</span></div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Question Navigator</div>
+        <div class="nav-grid" id="nav-grid"></div>
+        <div class="legend" style="margin-top:14px;">
+          <div class="legend-row"><span class="legend-dot ld-cur"></span> Current</div>
+          <div class="legend-row"><span class="legend-dot ld-ans"></span> Answered</div>
+          <div class="legend-row"><span class="legend-dot ld-flag"></span> Flagged</div>
+          <div class="legend-row"><span class="legend-dot ld-unan"></span> Unanswered</div>
+        </div>
+      </div>
+
+      <button class="btn-submit-sidebar" onclick="trySubmit()">Submit Exam →</button>
+    </aside>
+  </div>
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-nav-bar">
+    <button class="btn-nav prev" onclick="goToPrev()">←</button>
+    <div class="mob-answered">Q <strong id="mob-current">1</strong> of <strong>65</strong> · <span id="mob-answered">0</span> answered</div>
+    <button class="btn-nav" onclick="trySubmit()" style="background:var(--green)">Submit</button>
+    <button class="btn-nav" onclick="goToNext()">→</button>
+  </div>
+</div>
+
+<!-- ========== RESULT SCREEN ========== -->
+<div id="result-screen">
+  <div class="result-wrapper">
+    <div class="result-hero">
+      <div class="result-logo-row"><div class="start-logo-badge">K21 <span>Academy</span></div></div>
+      <div class="result-pass-badge" id="result-badge"></div>
+      <div class="result-pct" id="result-pct"></div>
+      <div class="result-scaled" id="result-scaled"></div>
+      <div class="result-correct-row" id="result-correct"></div>
+    </div>
+
+    <div class="domain-breakdown">
+      <div class="breakdown-title">📊 Domain-wise Breakdown</div>
+      <div id="domain-breakdown-rows"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-retake" onclick="resetExam()">↺ Retake Exam</button>
+      <button class="btn-review" onclick="showReview()">🔍 Review All Questions</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== REVIEW SCREEN ========== -->
+<div id="review-screen">
+  <header class="exam-header">
+    <div class="exam-header-logo">
+      <div class="logo-badge">K21</div>
+      <div class="exam-title">Review Mode — <span>SAA-C03</span></div>
+    </div>
+    <div class="exam-header-meta">
+      <button class="btn-return" onclick="backToResults()">← Back to Results</button>
+    </div>
+  </header>
+  <div class="review-wrapper" id="review-wrapper" style="padding-top:20px;"></div>
+</div>
+
+<!-- ========== TAB-SWITCH / BLUR OVERLAY ========== -->
+<div id="blur-overlay">
+  <div class="blur-box">
+    <div class="blur-icon">🚨</div>
+    <div class="blur-h">You Left the Exam!</div>
+    <div class="blur-p">Switching tabs or minimizing the browser is not allowed during the exam.</div>
+    <div class="blur-count-warning" id="blur-count-msg"></div>
+    <button class="btn-return" onclick="returnToExam()">Return to Exam</button>
+  </div>
+</div>
+
+<!-- ========== CONFIRM SUBMIT MODAL ========== -->
+<div id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title">Submit Exam?</div>
+    <div class="modal-body" id="confirm-body">Are you sure you want to submit? You cannot change your answers after submitting.</div>
+    <div class="modal-row">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-modal-ok" onclick="confirmSubmit()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+// EXAM CONFIG — AWS Certified Solutions Architect – Associate (SAA-C03)
+// ===================================================================
+const EXAM = {
+  total: 65,
+  timeLimitSec: 130 * 60,   // 130 minutes
+  passScaled: 720,          // 720 / 1000
+  maxBlur: 3
+};
+const DOMAIN_SHORT = {
+  "Design Secure Architectures":        "Domain 1",
+  "Design Resilient Architectures":     "Domain 2",
+  "Design High-Performing Architectures":"Domain 3",
+  "Design Cost-Optimized Architectures":"Domain 4"
+};
+const DOMAIN_ORDER = [
+  "Design Secure Architectures",
+  "Design Resilient Architectures",
+  "Design High-Performing Architectures",
+  "Design Cost-Optimized Architectures"
+];
+
+// ===================================================================
+// QUESTION BANK (65 original SAA-C03 practice questions)
+// ===================================================================
+const questions = [
+{
+  "id": "q001",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An application running on Amazon EC2 instances needs to read and write objects in an Amazon S3 bucket. The security team requires that no long-term credentials be stored on the instances. What is the MOST secure way to grant the required access?",
+  "options": [
+    { "id": "a", "text": "Create an IAM user, generate access keys, and store them in a file on each EC2 instance" },
+    { "id": "b", "text": "Attach an IAM role with an S3 access policy to the EC2 instances via an instance profile" },
+    { "id": "c", "text": "Embed AWS access keys as environment variables baked into the instance AMI" },
+    { "id": "d", "text": "Store access keys in the EC2 user data script so they are injected at launch" }
+  ],
+  "correct": ["b"],
+  "explanation": "Attaching an IAM role to EC2 instances through an instance profile lets applications obtain temporary, automatically-rotated credentials from the instance metadata service. No long-term access keys are stored on the instances, which is the AWS best practice. Storing static access keys in files, AMIs, or user data is insecure and hard to rotate."
+},
+{
+  "id": "q002",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company has separate AWS accounts for development and production. Developers in the development account occasionally need temporary, audited access to specific resources in the production account. Which approach follows AWS best practices?",
+  "options": [
+    { "id": "a", "text": "Create IAM users with identical passwords in both accounts" },
+    { "id": "b", "text": "Create an IAM role in the production account that trusts the development account, and have developers assume it with AWS STS" },
+    { "id": "c", "text": "Share the production account root user credentials with the development team" },
+    { "id": "d", "text": "Generate long-term access keys in production and email them to developers when needed" }
+  ],
+  "correct": ["b"],
+  "explanation": "Cross-account access is best implemented with an IAM role in the target (production) account that establishes a trust relationship with the source (development) account. Users assume the role using AWS STS to receive short-lived credentials, and the activity is logged in CloudTrail. Sharing root credentials or long-term keys violates least-privilege and auditing best practices."
+},
+{
+  "id": "q003",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An organization uses AWS Organizations to manage dozens of member accounts. The security team must guarantee that member accounts can only launch resources in the eu-west-1 and eu-central-1 Regions, regardless of individual IAM permissions in those accounts. What should the architect implement?",
+  "options": [
+    { "id": "a", "text": "An IAM permissions boundary applied to every user in each account" },
+    { "id": "b", "text": "A service control policy (SCP) that denies actions outside the approved Regions" },
+    { "id": "c", "text": "A network ACL restricting traffic to the two Regions" },
+    { "id": "d", "text": "An Amazon S3 bucket policy applied across all accounts" }
+  ],
+  "correct": ["b"],
+  "explanation": "Service control policies (SCPs) in AWS Organizations set the maximum available permissions for member accounts and apply regardless of local IAM policies. A Region-restriction SCP that denies actions outside approved Regions is the correct guardrail. Permissions boundaries, NACLs, and bucket policies do not enforce an org-wide Region restriction."
+},
+{
+  "id": "q004",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A security review finds that the AWS account root user is used for daily administrative tasks and has no additional protection. Which combination of actions BEST secures the root user according to AWS best practices?",
+  "options": [
+    { "id": "a", "text": "Delete the root user and rely only on IAM users" },
+    { "id": "b", "text": "Enable MFA on the root user, stop using it for daily tasks, and create IAM roles/users with least privilege for administration" },
+    { "id": "c", "text": "Give the root user a very long password and continue using it for administration" },
+    { "id": "d", "text": "Attach an administrator IAM policy directly to the root user" }
+  ],
+  "correct": ["b"],
+  "explanation": "The root user cannot be deleted and should be protected with MFA, locked away, and not used for everyday work. Day-to-day administration should be performed by IAM identities granted least-privilege permissions. Simply strengthening the root password or attaching policies to root does not follow best practice."
+},
+{
+  "id": "q005",
+  "domain": "Design Secure Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "A company stores sensitive customer files in an Amazon S3 bucket. Compliance requires that data be encrypted at rest and that all requests to the bucket use encryption in transit. Which TWO actions together meet these requirements? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Enable default encryption on the bucket using SSE-KMS" },
+    { "id": "b", "text": "Add a bucket policy that denies requests where aws:SecureTransport is false" },
+    { "id": "c", "text": "Enable S3 Transfer Acceleration on the bucket" },
+    { "id": "d", "text": "Enable S3 Versioning on the bucket" },
+    { "id": "e", "text": "Place the bucket behind an Application Load Balancer" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "Default encryption with SSE-KMS encrypts objects at rest. A bucket policy that denies requests when aws:SecureTransport is false forces clients to use HTTPS (TLS), enforcing encryption in transit. Transfer Acceleration and Versioning do not address encryption, and S3 buckets are not fronted by ALBs."
+},
+{
+  "id": "q006",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An application connects to an Amazon RDS database using a username and password currently hardcoded in the application source code. The security team wants credentials stored securely and rotated automatically without code changes. Which AWS service should the architect use?",
+  "options": [
+    { "id": "a", "text": "AWS Systems Manager Parameter Store standard parameters" },
+    { "id": "b", "text": "AWS Secrets Manager with automatic rotation enabled" },
+    { "id": "c", "text": "Amazon S3 with server-side encryption" },
+    { "id": "d", "text": "AWS Key Management Service (KMS) data keys" }
+  ],
+  "correct": ["b"],
+  "explanation": "AWS Secrets Manager stores database credentials securely and supports built-in automatic rotation for supported databases such as Amazon RDS, using Lambda rotation functions. The application retrieves the current secret at runtime, so no code changes are needed when the password rotates. Parameter Store standard parameters do not natively rotate database secrets."
+},
+{
+  "id": "q007",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A three-tier web application runs in a VPC. The web tier is behind an Application Load Balancer, and the application tier runs on EC2 instances in private subnets. The architect must ensure the application tier accepts traffic only from the load balancer on port 8080. What is the MOST appropriate way to enforce this?",
+  "options": [
+    { "id": "a", "text": "Create a network ACL that allows all traffic and rely on the route table" },
+    { "id": "b", "text": "Configure the application tier security group to allow inbound port 8080 only from the load balancer's security group" },
+    { "id": "c", "text": "Assign Elastic IP addresses to the application instances and allow all inbound traffic" },
+    { "id": "d", "text": "Open port 8080 to 0.0.0.0/0 in the application tier security group" }
+  ],
+  "correct": ["b"],
+  "explanation": "Security groups are stateful and can reference other security groups as sources. Allowing inbound port 8080 only from the load balancer's security group ensures the application tier accepts traffic exclusively from the ALB, without hardcoding IP ranges. Opening 8080 to the internet or relying on permissive NACLs would not restrict access appropriately."
+},
+{
+  "id": "q008",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A public-facing web application served through Amazon CloudFront and an Application Load Balancer is experiencing SQL injection and cross-site scripting attempts. Which AWS service should the architect add to inspect and block these malicious HTTP requests?",
+  "options": [
+    { "id": "a", "text": "AWS Shield Standard" },
+    { "id": "b", "text": "AWS WAF with managed rule groups" },
+    { "id": "c", "text": "Amazon GuardDuty" },
+    { "id": "d", "text": "Amazon Inspector" }
+  ],
+  "correct": ["b"],
+  "explanation": "AWS WAF inspects HTTP/HTTPS requests at Layer 7 and can block common web exploits such as SQL injection and cross-site scripting using managed or custom rules. It integrates with CloudFront and ALB. Shield focuses on DDoS, GuardDuty on threat detection from logs, and Inspector on vulnerability assessment of workloads."
+},
+{
+  "id": "q009",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An online retailer running a critical application on AWS wants enhanced protection against large, sophisticated DDoS attacks, along with access to a 24/7 DDoS response team and cost protection for scaling during attacks. Which service should be enabled?",
+  "options": [
+    { "id": "a", "text": "AWS Shield Advanced" },
+    { "id": "b", "text": "AWS WAF only" },
+    { "id": "c", "text": "Amazon Macie" },
+    { "id": "d", "text": "AWS Config" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Shield Advanced provides enhanced DDoS protection, access to the AWS Shield Response Team (SRT), and cost protection against usage spikes caused by DDoS attacks. Shield Standard is automatic but more basic. WAF blocks Layer 7 exploits but is not a full DDoS solution on its own."
+},
+{
+  "id": "q010",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company wants continuous, intelligent threat detection across its AWS accounts by analyzing VPC Flow Logs, DNS logs, and CloudTrail events to identify anomalous or malicious activity. Which service is designed for this purpose?",
+  "options": [
+    { "id": "a", "text": "Amazon Macie" },
+    { "id": "b", "text": "Amazon GuardDuty" },
+    { "id": "c", "text": "AWS Trusted Advisor" },
+    { "id": "d", "text": "AWS Certificate Manager" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon GuardDuty is a managed threat detection service that continuously analyzes CloudTrail events, VPC Flow Logs, and DNS logs using machine learning and threat intelligence to detect anomalous or malicious behavior. Macie focuses on discovering sensitive data in S3, and Trusted Advisor gives best-practice checks, not threat detection."
+},
+{
+  "id": "q011",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A healthcare company needs to automatically discover and classify personally identifiable information (PII) and protected health information stored across thousands of Amazon S3 buckets. Which service is purpose-built for this?",
+  "options": [
+    { "id": "a", "text": "Amazon GuardDuty" },
+    { "id": "b", "text": "Amazon Macie" },
+    { "id": "c", "text": "AWS Secrets Manager" },
+    { "id": "d", "text": "Amazon Detective" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon Macie uses machine learning and pattern matching to discover, classify, and report on sensitive data such as PII stored in Amazon S3. GuardDuty is for threat detection, Secrets Manager for credential storage, and Detective for security investigation, not data classification."
+},
+{
+  "id": "q012",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "EC2 instances in a private subnet must download and upload objects to Amazon S3. The security team requires that this traffic not traverse the public internet and that no NAT gateway be used for S3 access. What should the architect configure?",
+  "options": [
+    { "id": "a", "text": "An internet gateway attached to the private subnet" },
+    { "id": "b", "text": "A gateway VPC endpoint for Amazon S3" },
+    { "id": "c", "text": "A public Elastic IP on each instance" },
+    { "id": "d", "text": "AWS Direct Connect to the S3 service" }
+  ],
+  "correct": ["b"],
+  "explanation": "A gateway VPC endpoint for Amazon S3 allows instances in private subnets to access S3 over the AWS private network without an internet gateway or NAT gateway. It adds a route to the subnet route table and keeps traffic off the public internet. Internet gateways and Elastic IPs would expose instances publicly."
+},
+{
+  "id": "q013",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A large enterprise wants employees to sign in to the AWS Management Console for multiple accounts using their existing corporate identity provider, with centralized permission management. Which AWS service should the architect use?",
+  "options": [
+    { "id": "a", "text": "AWS IAM Identity Center (successor to AWS SSO) with the external identity provider" },
+    { "id": "b", "text": "Separate IAM users created manually in each account" },
+    { "id": "c", "text": "Amazon Cognito user pools" },
+    { "id": "d", "text": "AWS Directory Service Simple AD in every account" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS IAM Identity Center provides centralized, federated single sign-on across multiple AWS accounts and can integrate with an external identity provider (via SAML) or an existing directory. Cognito is for application end users, not workforce console access, and manually managing IAM users per account does not scale or centralize permissions."
+},
+{
+  "id": "q014",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company must encrypt data at rest with encryption keys that it controls, including the ability to define key usage permissions and enable automatic annual key rotation. Which solution meets these requirements with the LEAST operational overhead?",
+  "options": [
+    { "id": "a", "text": "Store keys on EC2 instances and rotate them manually" },
+    { "id": "b", "text": "Use AWS KMS customer managed keys with automatic rotation and a key policy" },
+    { "id": "c", "text": "Use client-side encryption with keys emailed between teams" },
+    { "id": "d", "text": "Disable encryption and rely on physical data center security" }
+  ],
+  "correct": ["b"],
+  "explanation": "AWS KMS customer managed keys let the customer define key policies for usage permissions and enable automatic key rotation, while KMS handles the underlying cryptographic operations with low operational overhead. Manually managing keys on instances or via email is insecure and operationally heavy."
+},
+{
+  "id": "q015",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An architect must enable HTTPS (TLS) on an Application Load Balancer for a public web application and wants AWS to manage certificate provisioning and automatic renewal at no additional cost for the certificate. Which service should be used?",
+  "options": [
+    { "id": "a", "text": "AWS Certificate Manager (ACM)" },
+    { "id": "b", "text": "AWS Key Management Service (KMS)" },
+    { "id": "c", "text": "AWS Secrets Manager" },
+    { "id": "d", "text": "Amazon CloudFront signed URLs" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Certificate Manager provisions public TLS/SSL certificates for use with services such as ALB and CloudFront at no cost for the certificate, and automatically renews them. This enables encryption in transit without manual certificate management. KMS and Secrets Manager do not issue TLS certificates for load balancers."
+},
+{
+  "id": "q016",
+  "domain": "Design Secure Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "A new team of developers needs programmatic access to a limited set of AWS services. The security team wants to follow least-privilege and avoid distributing long-term credentials where possible. Which TWO practices should the architect adopt? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Create an IAM group with a scoped policy granting only the required actions, and add the developers to it" },
+    { "id": "b", "text": "Grant temporary access through IAM roles assumed via AWS STS rather than issuing permanent access keys" },
+    { "id": "c", "text": "Attach the AdministratorAccess managed policy to each developer for flexibility" },
+    { "id": "d", "text": "Share one set of access keys among all developers" },
+    { "id": "e", "text": "Store access keys in a public code repository for easy retrieval" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "Least privilege is achieved by granting only the actions required through a scoped IAM group policy, and by preferring temporary credentials from IAM roles/STS over long-term access keys. Granting AdministratorAccess, sharing keys, or storing them in public repositories all violate security best practices."
+},
+{
+  "id": "q017",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A mobile application needs to let end users sign up, sign in, and receive temporary AWS credentials to access resources, with support for social identity providers. Which service should the architect use for user authentication and identity federation?",
+  "options": [
+    { "id": "a", "text": "AWS IAM Identity Center" },
+    { "id": "b", "text": "Amazon Cognito" },
+    { "id": "c", "text": "AWS Directory Service" },
+    { "id": "d", "text": "AWS Resource Access Manager" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon Cognito provides user sign-up and sign-in (user pools) and can federate with social and enterprise identity providers, issuing temporary AWS credentials through identity pools for accessing AWS resources. IAM Identity Center targets workforce access to AWS accounts, not application end users."
+},
+{
+  "id": "q018",
+  "domain": "Design Secure Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "EC2 instances in a private subnet need to download operating system patches from the internet but must not be reachable from the internet. Which design meets these requirements?",
+  "options": [
+    { "id": "a", "text": "Place the instances in a public subnet with Elastic IP addresses" },
+    { "id": "b", "text": "Route outbound internet traffic from the private subnet through a NAT gateway in a public subnet" },
+    { "id": "c", "text": "Attach an internet gateway directly to the private subnet" },
+    { "id": "d", "text": "Disable the route table for the private subnet" }
+  ],
+  "correct": ["b"],
+  "explanation": "A NAT gateway placed in a public subnet allows instances in private subnets to initiate outbound connections to the internet (for example, to download patches) while preventing inbound connections from the internet. Putting the instances in a public subnet or attaching an internet gateway directly would make them internet-reachable."
+},
+{
+  "id": "q019",
+  "domain": "Design Secure Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "A security audit reveals that application credentials are being embedded in EC2 launch scripts and AMIs. The architect wants to eliminate stored long-term credentials for both AWS API access and third-party API keys. Which TWO changes address this? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Use IAM roles attached to EC2 instances for AWS API access instead of embedded access keys" },
+    { "id": "b", "text": "Store third-party API keys in AWS Secrets Manager and retrieve them at runtime" },
+    { "id": "c", "text": "Bake the credentials into a new golden AMI so they are consistent" },
+    { "id": "d", "text": "Print the credentials to CloudWatch Logs for auditing" },
+    { "id": "e", "text": "Hardcode the credentials in the application configuration file" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "IAM roles supply temporary AWS credentials to EC2 without storing access keys, and AWS Secrets Manager securely stores third-party secrets that applications fetch at runtime. Baking credentials into AMIs, logging them, or hardcoding them all leave long-term secrets exposed."
+},
+{
+  "id": "q020",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A web application experiences sudden traffic spikes that overwhelm a backend order-processing service, causing dropped requests. The architect wants to decouple the components so the backend can process requests at its own pace without losing messages. Which service should be introduced between the tiers?",
+  "options": [
+    { "id": "a", "text": "Amazon SQS" },
+    { "id": "b", "text": "Amazon CloudFront" },
+    { "id": "c", "text": "AWS Direct Connect" },
+    { "id": "d", "text": "Amazon Route 53" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon SQS provides a durable message queue that decouples producers from consumers, buffering requests during spikes so the backend can process them asynchronously without dropping messages. CloudFront, Direct Connect, and Route 53 do not provide message buffering between application tiers."
+},
+{
+  "id": "q021",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A production Amazon RDS database must remain available if the primary database instance or its Availability Zone fails, with automatic failover and no application changes. Which configuration meets this requirement?",
+  "options": [
+    { "id": "a", "text": "Create a single read replica in the same Availability Zone" },
+    { "id": "b", "text": "Enable RDS Multi-AZ deployment with a standby instance in a second Availability Zone" },
+    { "id": "c", "text": "Take manual snapshots every hour" },
+    { "id": "d", "text": "Increase the instance size to the largest available type" }
+  ],
+  "correct": ["b"],
+  "explanation": "RDS Multi-AZ maintains a synchronous standby replica in a different Availability Zone and automatically fails over to it if the primary or its AZ fails, using the same database endpoint so no application changes are needed. Read replicas are for scaling reads, and snapshots or larger instances do not provide automatic failover."
+},
+{
+  "id": "q022",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An architect is designing a stateless web tier that must stay available if an entire Availability Zone becomes unavailable, and must scale with demand. Which design BEST meets these goals?",
+  "options": [
+    { "id": "a", "text": "A single large EC2 instance with an Elastic IP" },
+    { "id": "b", "text": "An Auto Scaling group spanning multiple Availability Zones behind an Application Load Balancer" },
+    { "id": "c", "text": "Two EC2 instances in the same Availability Zone" },
+    { "id": "d", "text": "A fleet of EC2 instances in one AZ with scheduled reboots" }
+  ],
+  "correct": ["b"],
+  "explanation": "An Auto Scaling group that spans multiple Availability Zones, fronted by an Application Load Balancer, distributes traffic across healthy instances and automatically replaces failed instances and scales with demand. Deploying in a single AZ or on one instance creates a single point of failure."
+},
+{
+  "id": "q023",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company runs its primary website in one AWS Region and a standby copy in a second Region. If the primary becomes unhealthy, DNS should automatically route users to the standby. Which Amazon Route 53 feature provides this?",
+  "options": [
+    { "id": "a", "text": "Weighted routing with equal weights" },
+    { "id": "b", "text": "Failover routing policy with health checks" },
+    { "id": "c", "text": "Simple routing to the primary only" },
+    { "id": "d", "text": "Multivalue answer routing without health checks" }
+  ],
+  "correct": ["b"],
+  "explanation": "A Route 53 failover routing policy paired with health checks directs traffic to the primary endpoint while it is healthy and automatically fails over to the secondary endpoint when the primary fails its health check. Weighted and simple routing do not perform automatic failover based on health."
+},
+{
+  "id": "q024",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company needs a disaster recovery strategy for a non-critical internal application. The business accepts an RTO and RPO of several hours and wants the LOWEST ongoing cost. Which DR strategy is MOST appropriate?",
+  "options": [
+    { "id": "a", "text": "Active-active multi-Region deployment" },
+    { "id": "b", "text": "Warm standby with scaled-down infrastructure always running" },
+    { "id": "c", "text": "Backup and restore using regular backups to Amazon S3" },
+    { "id": "d", "text": "Pilot light with core databases always running" }
+  ],
+  "correct": ["c"],
+  "explanation": "Backup and restore is the lowest-cost DR strategy and is appropriate when the business can tolerate an RTO/RPO measured in hours, because recovery involves restoring from backups rather than maintaining running infrastructure. Warm standby, pilot light, and active-active provide faster recovery at higher ongoing cost than required here."
+},
+{
+  "id": "q025",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "When a new order is placed, multiple independent systems (inventory, billing, and analytics) must each receive a copy of the event to process it separately. Which messaging pattern and service BEST fits this requirement?",
+  "options": [
+    { "id": "a", "text": "A single Amazon SQS queue polled by all three systems" },
+    { "id": "b", "text": "Amazon SNS fan-out to multiple subscribing Amazon SQS queues, one per system" },
+    { "id": "c", "text": "A shared Amazon EBS volume attached to all systems" },
+    { "id": "d", "text": "Amazon CloudFront distributions for each system" }
+  ],
+  "correct": ["b"],
+  "explanation": "The publish/subscribe fan-out pattern uses Amazon SNS to publish each event to a topic, with multiple Amazon SQS queues subscribed—one per downstream system—so each system gets its own copy to process independently and durably. A single shared SQS queue would let only one consumer receive each message."
+},
+{
+  "id": "q026",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company stores critical objects in Amazon S3 in one Region and must maintain a copy in a second Region for disaster recovery and to reduce latency for a remote office. Which S3 feature meets this requirement automatically?",
+  "options": [
+    { "id": "a", "text": "S3 Lifecycle transition to S3 Glacier" },
+    { "id": "b", "text": "S3 Cross-Region Replication (CRR)" },
+    { "id": "c", "text": "S3 Transfer Acceleration" },
+    { "id": "d", "text": "S3 Object Lock" }
+  ],
+  "correct": ["b"],
+  "explanation": "S3 Cross-Region Replication automatically and asynchronously copies objects to a bucket in a different Region, supporting DR and lower-latency access for users in that Region. Lifecycle transitions change storage class, Transfer Acceleration speeds uploads, and Object Lock enforces retention—none replicate across Regions."
+},
+{
+  "id": "q027",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An application uses Amazon Aurora as its relational database. The team wants automatic failover to a replica in another Availability Zone with minimal downtime if the writer instance fails. What should the architect configure?",
+  "options": [
+    { "id": "a", "text": "A single Aurora instance with frequent snapshots" },
+    { "id": "b", "text": "An Aurora DB cluster with one or more Aurora Replicas in different Availability Zones" },
+    { "id": "c", "text": "A read-only S3 export of the database" },
+    { "id": "d", "text": "Aurora running on a single Availability Zone with a larger instance class" }
+  ],
+  "correct": ["b"],
+  "explanation": "An Aurora DB cluster with Aurora Replicas placed in different Availability Zones enables automatic failover: if the writer fails, Aurora promotes a replica, typically within seconds. A single instance—regardless of size—or snapshot-only approach does not provide fast automatic failover."
+},
+{
+  "id": "q028",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A data pipeline requires coordinating several steps—invoking Lambda functions, waiting for approvals, and retrying failed steps with error handling—as a reliable workflow. Which AWS service is designed to orchestrate this?",
+  "options": [
+    { "id": "a", "text": "AWS Step Functions" },
+    { "id": "b", "text": "Amazon SQS" },
+    { "id": "c", "text": "Amazon EventBridge Scheduler only" },
+    { "id": "d", "text": "AWS Batch" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Step Functions coordinates multi-step workflows as state machines with built-in error handling, retries, wait states, and branching, making distributed processes reliable and observable. SQS only queues messages, and Batch runs batch compute jobs rather than orchestrating arbitrary workflow logic."
+},
+{
+  "id": "q029",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "Several EC2 instances across multiple Availability Zones must share the same file data with concurrent read/write access, and the storage must remain available if one Availability Zone fails. Which storage service meets these requirements?",
+  "options": [
+    { "id": "a", "text": "Amazon EBS volume attached to a single instance" },
+    { "id": "b", "text": "Amazon EFS mounted from instances in multiple Availability Zones" },
+    { "id": "c", "text": "Instance store volumes on each instance" },
+    { "id": "d", "text": "A single Amazon S3 object mounted as a block device" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon EFS is a managed, elastic NFS file system that can be mounted concurrently by many EC2 instances across multiple Availability Zones and remains available if an AZ fails. EBS volumes attach to one instance at a time (except specific multi-attach cases), and instance store is ephemeral and local."
+},
+{
+  "id": "q030",
+  "domain": "Design Resilient Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "An architect must make a currently single-instance web tier highly available and fault tolerant. Which TWO actions together achieve this? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Launch the web servers in an Auto Scaling group across at least two Availability Zones" },
+    { "id": "b", "text": "Place an Application Load Balancer in front of the instances with health checks enabled" },
+    { "id": "c", "text": "Run a single larger EC2 instance to handle all traffic" },
+    { "id": "d", "text": "Assign a static Elastic IP to one instance and route all traffic to it" },
+    { "id": "e", "text": "Disable health checks to avoid instance replacement" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "Distributing web servers in an Auto Scaling group across multiple Availability Zones removes single-AZ and single-instance points of failure, while an Application Load Balancer with health checks routes traffic only to healthy instances and works with Auto Scaling to replace failures. Relying on one instance or Elastic IP reintroduces a single point of failure."
+},
+{
+  "id": "q031",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A queue-based worker occasionally fails to process certain messages, which then reappear and are retried indefinitely, blocking the queue. The architect wants failed messages isolated for later inspection without stopping normal processing. What should be configured?",
+  "options": [
+    { "id": "a", "text": "A dead-letter queue (DLQ) with a maximum receive count on the source SQS queue" },
+    { "id": "b", "text": "A longer visibility timeout only" },
+    { "id": "c", "text": "FIFO ordering on the queue" },
+    { "id": "d", "text": "Server-side encryption on the queue" }
+  ],
+  "correct": ["a"],
+  "explanation": "Configuring a dead-letter queue with a maximum receive count moves messages that repeatedly fail processing to a separate queue for later analysis, preventing them from blocking the main queue. Adjusting visibility timeout, ordering, or encryption does not isolate poison-pill messages."
+},
+{
+  "id": "q032",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A legacy application uses the standard AMQP and MQTT messaging protocols and must be migrated to AWS with minimal code changes while improving reliability. Which managed service should the architect recommend?",
+  "options": [
+    { "id": "a", "text": "Amazon SQS" },
+    { "id": "b", "text": "Amazon MQ" },
+    { "id": "c", "text": "Amazon Kinesis Data Streams" },
+    { "id": "d", "text": "AWS Step Functions" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon MQ is a managed message broker for Apache ActiveMQ and RabbitMQ that supports industry-standard protocols such as AMQP and MQTT, making it ideal for migrating legacy messaging applications with minimal code changes. SQS uses its own API and would require application changes."
+},
+{
+  "id": "q033",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A global application must remain fully operational with near-zero recovery time even if an entire AWS Region fails, and can serve users from either Region under normal conditions. Which disaster recovery approach meets this requirement?",
+  "options": [
+    { "id": "a", "text": "Backup and restore" },
+    { "id": "b", "text": "Pilot light" },
+    { "id": "c", "text": "Active-active multi-Region with Route 53 routing" },
+    { "id": "d", "text": "Single-Region deployment with cross-AZ redundancy only" }
+  ],
+  "correct": ["c"],
+  "explanation": "An active-active multi-Region architecture runs full production capacity in more than one Region simultaneously, with Route 53 distributing traffic, so a Region failure results in near-zero RTO. Backup and restore and pilot light have longer recovery times, and single-Region designs cannot survive a full Region outage."
+},
+{
+  "id": "q034",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A gaming company needs a NoSQL database that provides multi-Region, active-active reads and writes with automatic replication so players in different Regions have a local, resilient data copy. Which solution meets this requirement?",
+  "options": [
+    { "id": "a", "text": "Amazon DynamoDB global tables" },
+    { "id": "b", "text": "A single-Region Amazon RDS instance" },
+    { "id": "c", "text": "Amazon Redshift" },
+    { "id": "d", "text": "Amazon DynamoDB with only a local secondary index" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon DynamoDB global tables provide fully managed, multi-Region, multi-active replication, giving low-latency local access and resilience against a Region failure. A single-Region RDS instance cannot offer active-active multi-Region writes, and Redshift is a data warehouse, not an operational NoSQL store."
+},
+{
+  "id": "q035",
+  "domain": "Design Resilient Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An architect wants to process images asynchronously and reliably: each uploaded image should trigger processing, and transient failures should be retried automatically without losing the request. Which combination provides a resilient, loosely coupled design?",
+  "options": [
+    { "id": "a", "text": "Have the web server call the processing code synchronously in the same request" },
+    { "id": "b", "text": "Send image jobs to an Amazon SQS queue that triggers AWS Lambda, with a dead-letter queue for failures" },
+    { "id": "c", "text": "Store images on a single EC2 instance and process them with a cron job" },
+    { "id": "d", "text": "Process images only during a nightly manual batch run" }
+  ],
+  "correct": ["b"],
+  "explanation": "Placing jobs on an SQS queue that triggers Lambda decouples ingestion from processing, allows automatic scaling, and provides built-in retries with a dead-letter queue to capture failures—resilient and loosely coupled. Synchronous processing or a single-instance cron job creates tight coupling and single points of failure."
+},
+{
+  "id": "q036",
+  "domain": "Design Resilient Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "An application currently runs in a single Availability Zone: EC2 instances behind a load balancer plus an Amazon RDS database. Which TWO changes remove single points of failure? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Enable RDS Multi-AZ so a standby database exists in another Availability Zone" },
+    { "id": "b", "text": "Extend the Auto Scaling group and load balancer across multiple Availability Zones" },
+    { "id": "c", "text": "Increase the size of the single EC2 instance" },
+    { "id": "d", "text": "Move all resources into one larger Availability Zone" },
+    { "id": "e", "text": "Disable automated RDS backups to save time" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "Enabling RDS Multi-AZ removes the database as a single point of failure by maintaining a standby in another AZ, and spreading the Auto Scaling group and load balancer across multiple AZs removes the compute single point of failure. Vertically scaling one instance or consolidating into one AZ does not add redundancy."
+},
+{
+  "id": "q037",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A transactional database on Amazon EC2 requires consistently high IOPS and low latency, with the ability to provision a specific IOPS level independent of volume size. Which Amazon EBS volume type is MOST appropriate?",
+  "options": [
+    { "id": "a", "text": "Throughput Optimized HDD (st1)" },
+    { "id": "b", "text": "Cold HDD (sc1)" },
+    { "id": "c", "text": "Provisioned IOPS SSD (io2)" },
+    { "id": "d", "text": "Magnetic (standard)" }
+  ],
+  "correct": ["c"],
+  "explanation": "Provisioned IOPS SSD (io1/io2) volumes are designed for I/O-intensive, latency-sensitive workloads such as transactional databases and allow you to provision a specific IOPS level. HDD types (st1, sc1) are for throughput-oriented or cold data, not high-IOPS transactional databases."
+},
+{
+  "id": "q038",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A media company needs highly durable, virtually unlimited storage for large volumes of images and videos served to a web application, with the ability to scale without capacity planning. Which storage service is the BEST fit?",
+  "options": [
+    { "id": "a", "text": "Amazon EBS" },
+    { "id": "b", "text": "Amazon S3" },
+    { "id": "c", "text": "Amazon EC2 instance store" },
+    { "id": "d", "text": "Amazon FSx for Windows File Server" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon S3 is object storage offering high durability, virtually unlimited capacity, and no capacity planning, making it ideal for storing and serving large volumes of media. EBS and instance store are block storage tied to instances, and FSx for Windows is a file system for Windows workloads."
+},
+{
+  "id": "q039",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A fleet of Linux EC2 instances running a content management system must share the same set of files with high throughput and automatically scale storage capacity as content grows. Which service meets these needs?",
+  "options": [
+    { "id": "a", "text": "Amazon EFS" },
+    { "id": "b", "text": "Amazon EBS attached to each instance separately" },
+    { "id": "c", "text": "Amazon S3 Glacier" },
+    { "id": "d", "text": "Amazon FSx for Lustre" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon EFS is a scalable, shared NFS file system for Linux that multiple EC2 instances can mount simultaneously, growing and shrinking automatically. Separate EBS volumes are not shared, Glacier is archival, and FSx for Lustre targets HPC/high-performance compute rather than general shared CMS content."
+},
+{
+  "id": "q040",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A high-performance computing workload needs a shared file system optimized for very high throughput and low latency, integrated with data stored in Amazon S3. Which service should the architect choose?",
+  "options": [
+    { "id": "a", "text": "Amazon FSx for Lustre" },
+    { "id": "b", "text": "Amazon EFS Standard" },
+    { "id": "c", "text": "Amazon S3 Standard-IA" },
+    { "id": "d", "text": "Amazon EBS gp2" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon FSx for Lustre is a fully managed, high-performance file system built for HPC, machine learning, and media workloads, delivering very high throughput and low latency and integrating natively with Amazon S3. EFS is general-purpose, and S3-IA and EBS gp2 do not provide a Lustre-based HPC file system."
+},
+{
+  "id": "q041",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A read-heavy application repeatedly runs the same expensive database queries, increasing latency and load on the Amazon RDS instance. The architect wants to reduce latency and offload repeated reads with an in-memory cache. Which service should be added?",
+  "options": [
+    { "id": "a", "text": "Amazon ElastiCache" },
+    { "id": "b", "text": "Amazon Athena" },
+    { "id": "c", "text": "Amazon Redshift" },
+    { "id": "d", "text": "Amazon EBS Provisioned IOPS" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon ElastiCache (Redis or Memcached) provides an in-memory cache that stores frequently accessed query results, reducing read latency and offloading the database. Athena queries S3, Redshift is a data warehouse, and Provisioned IOPS improves disk performance but does not cache query results in memory."
+},
+{
+  "id": "q042",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An application using Amazon DynamoDB needs microsecond read latency for hot items during extreme read spikes, without changing the application's DynamoDB API calls significantly. Which solution meets this requirement?",
+  "options": [
+    { "id": "a", "text": "Amazon DynamoDB Accelerator (DAX)" },
+    { "id": "b", "text": "Amazon RDS read replicas" },
+    { "id": "c", "text": "Amazon CloudFront" },
+    { "id": "d", "text": "Amazon S3 Transfer Acceleration" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon DynamoDB Accelerator (DAX) is a fully managed, in-memory cache for DynamoDB that delivers microsecond read latency for cached items and is API-compatible with DynamoDB, requiring minimal application changes. RDS read replicas apply to relational databases, and CloudFront/S3 acceleration are unrelated to DynamoDB item caching."
+},
+{
+  "id": "q043",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A reporting workload generates heavy read traffic against an Amazon RDS for MySQL primary database, slowing down write transactions. The architect wants to offload read queries to improve performance. What should be implemented?",
+  "options": [
+    { "id": "a", "text": "Enable Multi-AZ deployment" },
+    { "id": "b", "text": "Create one or more RDS read replicas and direct reporting queries to them" },
+    { "id": "c", "text": "Increase the backup retention period" },
+    { "id": "d", "text": "Convert the database to a single larger instance and stop scaling" }
+  ],
+  "correct": ["b"],
+  "explanation": "RDS read replicas offload read-only traffic such as reporting queries from the primary, improving overall performance and scaling reads horizontally. Multi-AZ provides high availability but its standby does not serve reads, and simply enlarging one instance does not separate read and write traffic."
+},
+{
+  "id": "q044",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company serves static assets and videos to a global audience and wants to reduce latency by caching content at edge locations close to users. Which service should the architect use?",
+  "options": [
+    { "id": "a", "text": "Amazon CloudFront" },
+    { "id": "b", "text": "AWS Global Accelerator" },
+    { "id": "c", "text": "Amazon Route 53 latency routing only" },
+    { "id": "d", "text": "AWS Direct Connect" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon CloudFront is a content delivery network that caches static and streaming content at edge locations worldwide, reducing latency for global users. Global Accelerator improves availability and performance for non-cacheable TCP/UDP traffic but does not cache content, and Route 53 and Direct Connect do not provide edge caching."
+},
+{
+  "id": "q045",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A global online game uses a UDP-based protocol and needs consistent low latency and fast regional failover by routing players over the AWS global network to the nearest healthy endpoint. Which service BEST meets this requirement?",
+  "options": [
+    { "id": "a", "text": "Amazon CloudFront" },
+    { "id": "b", "text": "AWS Global Accelerator" },
+    { "id": "c", "text": "Amazon API Gateway" },
+    { "id": "d", "text": "Amazon CloudWatch" }
+  ],
+  "correct": ["b"],
+  "explanation": "AWS Global Accelerator provides static anycast IP addresses and routes TCP and UDP traffic over the AWS global network to the optimal healthy endpoint, improving latency and enabling fast failover—ideal for real-time games. CloudFront is optimized for cacheable HTTP content, not UDP game traffic."
+},
+{
+  "id": "q046",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An architect wants an EC2 fleet to automatically maintain average CPU utilization near 50% by adding or removing instances as load changes. Which Auto Scaling configuration achieves this with the least tuning?",
+  "options": [
+    { "id": "a", "text": "A target tracking scaling policy based on average CPU utilization" },
+    { "id": "b", "text": "A scheduled scaling action that runs once per day" },
+    { "id": "c", "text": "Manually adjusting the desired capacity as needed" },
+    { "id": "d", "text": "A fixed-size Auto Scaling group with no scaling policy" }
+  ],
+  "correct": ["a"],
+  "explanation": "A target tracking scaling policy automatically adjusts capacity to keep a chosen metric—such as average CPU utilization—at a target value, requiring minimal tuning. Scheduled scaling handles predictable time-based patterns, and manual or fixed sizing cannot respond automatically to changing load."
+},
+{
+  "id": "q047",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An AWS Lambda function that processes data is running slower than required. The team observes it is CPU-bound. Which change is MOST likely to improve its performance?",
+  "options": [
+    { "id": "a", "text": "Increase the function's allocated memory, which also increases the CPU allocated to it" },
+    { "id": "b", "text": "Decrease the function timeout" },
+    { "id": "c", "text": "Reduce the allocated memory to the minimum" },
+    { "id": "d", "text": "Move the code to a smaller deployment package without other changes" }
+  ],
+  "correct": ["a"],
+  "explanation": "In AWS Lambda, CPU (and network) allocation scales proportionally with the amount of memory configured. Increasing memory gives a CPU-bound function more processing power and typically reduces execution time. Lowering memory or timeout would not improve, and could worsen, performance."
+},
+{
+  "id": "q048",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company must ingest and process a continuous, high-volume stream of clickstream events in near real time, allowing multiple consumers to read the data. Which service is designed for real-time streaming ingestion?",
+  "options": [
+    { "id": "a", "text": "Amazon Kinesis Data Streams" },
+    { "id": "b", "text": "Amazon S3 batch uploads" },
+    { "id": "c", "text": "Amazon RDS" },
+    { "id": "d", "text": "AWS Glue crawlers" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon Kinesis Data Streams is built for real-time ingestion of high-volume streaming data, allowing multiple applications to consume the same stream concurrently. Batch uploads to S3 are not real time, RDS is a transactional database, and Glue crawlers catalog data rather than ingesting streams."
+},
+{
+  "id": "q049",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "Analysts need to run ad hoc SQL queries directly against large volumes of log data stored in Amazon S3 without provisioning or managing any servers or clusters. Which service should the architect recommend?",
+  "options": [
+    { "id": "a", "text": "Amazon Athena" },
+    { "id": "b", "text": "Amazon EMR with a persistent cluster" },
+    { "id": "c", "text": "Amazon RDS for PostgreSQL" },
+    { "id": "d", "text": "Amazon EC2 running a self-managed database" }
+  ],
+  "correct": ["a"],
+  "explanation": "Amazon Athena is a serverless, interactive query service that runs standard SQL directly against data in Amazon S3 with no infrastructure to manage, and you pay per query. EMR requires cluster management, and loading logs into RDS or a self-managed database on EC2 adds operational overhead."
+},
+{
+  "id": "q050",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A data engineering team needs a serverless service to extract data from various sources, transform it (for example, converting .csv files to .parquet), and load it into a data lake, with a managed data catalog. Which service is designed for this?",
+  "options": [
+    { "id": "a", "text": "AWS Glue" },
+    { "id": "b", "text": "Amazon QuickSight" },
+    { "id": "c", "text": "Amazon Kinesis Data Streams" },
+    { "id": "d", "text": "AWS Data Exchange" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Glue is a serverless ETL service that discovers, catalogs, transforms, and moves data—including format conversions such as CSV to Parquet—into data lakes and warehouses. QuickSight is for visualization, Kinesis for streaming ingestion, and Data Exchange for third-party data subscriptions."
+},
+{
+  "id": "q051",
+  "domain": "Design High-Performing Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "A read-heavy web application backed by Amazon RDS is experiencing high read latency during peak hours. Which TWO changes would improve read performance? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Add Amazon RDS read replicas and direct read queries to them" },
+    { "id": "b", "text": "Introduce Amazon ElastiCache to cache frequently accessed query results" },
+    { "id": "c", "text": "Reduce the RDS instance to a smaller class to force query optimization" },
+    { "id": "d", "text": "Disable automated backups during peak hours" },
+    { "id": "e", "text": "Move the database to a single Availability Zone" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "RDS read replicas scale read capacity horizontally, and ElastiCache serves frequently requested data from memory, both reducing read latency and load on the primary. Downsizing the instance, disabling backups, or collapsing to one AZ would not improve read performance and could reduce reliability."
+},
+{
+  "id": "q052",
+  "domain": "Design High-Performing Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A tightly coupled HPC application requires the lowest possible network latency and highest packet-per-second performance between a group of EC2 instances within a single Availability Zone. Which EC2 feature should the architect use?",
+  "options": [
+    { "id": "a", "text": "A cluster placement group" },
+    { "id": "b", "text": "A spread placement group across Regions" },
+    { "id": "c", "text": "Multiple Availability Zones with a NAT gateway" },
+    { "id": "d", "text": "An Auto Scaling group with default settings" }
+  ],
+  "correct": ["a"],
+  "explanation": "A cluster placement group packs instances close together within a single Availability Zone to deliver low-latency, high-throughput network performance ideal for tightly coupled HPC workloads. Spread placement groups optimize for fault isolation, not lowest latency, and spanning AZs increases latency."
+},
+{
+  "id": "q053",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "Application log files are frequently accessed for 30 days, rarely accessed for the next 60 days, and must be retained for 7 years for compliance but almost never read afterward. Which approach minimizes storage cost?",
+  "options": [
+    { "id": "a", "text": "Keep all logs in S3 Standard for the full 7 years" },
+    { "id": "b", "text": "Use an S3 Lifecycle policy to transition objects to S3 Standard-IA after 30 days and to S3 Glacier Deep Archive for long-term retention" },
+    { "id": "c", "text": "Store the logs on Amazon EBS volumes" },
+    { "id": "d", "text": "Delete the logs after 30 days" }
+  ],
+  "correct": ["b"],
+  "explanation": "An S3 Lifecycle policy can automatically transition objects to lower-cost tiers as access frequency drops—Standard-IA for infrequent access and Glacier Deep Archive for long-term archival—minimizing cost while meeting retention requirements. Keeping everything in Standard is expensive, EBS is costlier still, and deleting violates compliance."
+},
+{
+  "id": "q054",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company stores objects in Amazon S3 but cannot predict or characterize their access patterns, which change over time. The team wants automatic cost optimization without performance impact or retrieval fees for moving data between frequent and infrequent tiers. Which storage class should be used?",
+  "options": [
+    { "id": "a", "text": "S3 Standard" },
+    { "id": "b", "text": "S3 Intelligent-Tiering" },
+    { "id": "c", "text": "S3 One Zone-IA" },
+    { "id": "d", "text": "S3 Glacier Flexible Retrieval" }
+  ],
+  "correct": ["b"],
+  "explanation": "S3 Intelligent-Tiering automatically moves objects between access tiers based on changing access patterns without retrieval fees or performance impact, making it ideal when access patterns are unknown or unpredictable. The other classes require you to know the access pattern or incur retrieval costs/latency."
+},
+{
+  "id": "q055",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A batch data-processing job is fault tolerant, can be interrupted and resumed, and runs at flexible times. The company wants the LOWEST possible EC2 compute cost. Which purchasing option should the architect choose?",
+  "options": [
+    { "id": "a", "text": "On-Demand Instances" },
+    { "id": "b", "text": "Spot Instances" },
+    { "id": "c", "text": "Dedicated Hosts" },
+    { "id": "d", "text": "Standard Reserved Instances with all upfront payment" }
+  ],
+  "correct": ["b"],
+  "explanation": "Spot Instances offer the deepest discounts (up to about 90% off On-Demand) and are ideal for fault-tolerant, interruptible, time-flexible workloads such as batch processing. On-Demand is more expensive, Dedicated Hosts are for licensing/compliance, and Reserved Instances suit steady long-running workloads."
+},
+{
+  "id": "q056",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company runs a production application on EC2 instances 24/7 with steady, predictable usage over the next three years. Which purchasing option provides the greatest cost savings for this stable workload?",
+  "options": [
+    { "id": "a", "text": "Spot Instances" },
+    { "id": "b", "text": "On-Demand Instances" },
+    { "id": "c", "text": "Compute Savings Plans or Reserved Instances for a 3-year term" },
+    { "id": "d", "text": "Dedicated Hosts billed On-Demand" }
+  ],
+  "correct": ["c"],
+  "explanation": "For steady, predictable, always-on workloads, a 3-year Compute Savings Plan or Reserved Instance commitment provides substantial discounts over On-Demand. Spot is unsuitable for uninterrupted production, and On-Demand or On-Demand Dedicated Hosts are the most expensive for continuous use."
+},
+{
+  "id": "q057",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "EC2 instances in private subnets access Amazon S3 through a NAT gateway, and the company is incurring significant NAT gateway data processing charges for this S3 traffic. What is the MOST cost-effective way to reduce these charges?",
+  "options": [
+    { "id": "a", "text": "Create a gateway VPC endpoint for Amazon S3 so traffic bypasses the NAT gateway" },
+    { "id": "b", "text": "Increase the size of the NAT gateway" },
+    { "id": "c", "text": "Move all instances to public subnets with public IPs" },
+    { "id": "d", "text": "Replace the NAT gateway with a NAT instance on a large EC2 type" }
+  ],
+  "correct": ["a"],
+  "explanation": "A gateway VPC endpoint for Amazon S3 routes S3 traffic over the AWS private network at no per-GB charge, eliminating NAT gateway data processing costs for that traffic. NAT gateways cannot be 'resized' for cost, exposing instances publicly is insecure, and a NAT instance adds management overhead."
+},
+{
+  "id": "q058",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A development and testing database is used only a few hours per day with unpredictable, intermittent activity and is idle much of the time. The team wants to minimize cost by paying only for capacity when the database is in use. Which option is MOST cost-effective?",
+  "options": [
+    { "id": "a", "text": "A large provisioned Amazon RDS instance running continuously" },
+    { "id": "b", "text": "Amazon Aurora Serverless, which scales capacity based on demand" },
+    { "id": "c", "text": "Amazon Redshift provisioned cluster" },
+    { "id": "d", "text": "A self-managed database on a Reserved Instance" }
+  ],
+  "correct": ["b"],
+  "explanation": "Amazon Aurora Serverless automatically scales database capacity based on actual demand and can scale down during idle periods, so you pay for what you use—ideal for intermittent dev/test workloads. A continuously running provisioned instance, Redshift cluster, or Reserved Instance would incur cost even while idle."
+},
+{
+  "id": "q059",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A new application has low and highly unpredictable traffic. The team wants a NoSQL database billing model where they pay per request and are not charged for provisioned but unused throughput. Which Amazon DynamoDB option fits best?",
+  "options": [
+    { "id": "a", "text": "DynamoDB provisioned capacity with high fixed RCUs and WCUs" },
+    { "id": "b", "text": "DynamoDB on-demand capacity mode" },
+    { "id": "c", "text": "DynamoDB with a large reserved capacity purchase" },
+    { "id": "d", "text": "Run a self-managed NoSQL database on a Reserved Instance" }
+  ],
+  "correct": ["b"],
+  "explanation": "DynamoDB on-demand capacity mode charges per read and write request with no need to provision throughput, making it cost-effective for unpredictable or spiky traffic where usage is hard to forecast. Fixed provisioned or reserved capacity would pay for unused throughput during quiet periods."
+},
+{
+  "id": "q060",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "An application receives a few thousand short-lived, event-driven requests per day with long idle periods. The team wants to avoid paying for idle servers and only pay for actual compute time. Which compute option is MOST cost-effective?",
+  "options": [
+    { "id": "a", "text": "A continuously running EC2 instance sized for peak load" },
+    { "id": "b", "text": "AWS Lambda, which charges only for the compute time consumed" },
+    { "id": "c", "text": "A fixed-size EC2 Auto Scaling group with a minimum of 4 instances" },
+    { "id": "d", "text": "Amazon EKS with a large permanent node group" }
+  ],
+  "correct": ["b"],
+  "explanation": "AWS Lambda is serverless and bills only for the compute time used per invocation, with no charge during idle periods, making it ideal for intermittent, event-driven workloads. Always-on EC2 instances, a large minimum Auto Scaling group, or a permanent EKS node group incur cost even when idle."
+},
+{
+  "id": "q061",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A finance team wants to be alerted before monthly AWS spend exceeds a defined threshold and to track costs by project using tags. Which combination of AWS tools should the architect recommend?",
+  "options": [
+    { "id": "a", "text": "AWS Budgets for threshold alerts and cost allocation tags for per-project tracking" },
+    { "id": "b", "text": "Amazon CloudWatch dashboards only" },
+    { "id": "c", "text": "AWS Trusted Advisor only" },
+    { "id": "d", "text": "Amazon Inspector for cost tracking" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Budgets lets you set custom cost or usage thresholds and receive alerts before spend is exceeded, while cost allocation tags enable tracking and reporting spend by project or team in Cost Explorer and the Cost and Usage Report. CloudWatch, Trusted Advisor, and Inspector are not cost-budgeting/allocation tools."
+},
+{
+  "id": "q062",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company must transfer 200 TB of archival data from an on-premises data center to Amazon S3. The available internet connection is limited, making an online transfer impractically slow, and the migration is a one-time event. Which option is the MOST cost-effective and practical?",
+  "options": [
+    { "id": "a", "text": "Upload the data over the existing internet connection using the AWS CLI" },
+    { "id": "b", "text": "Use AWS Snowball to ship the data physically to AWS for import into S3" },
+    { "id": "c", "text": "Provision an AWS Direct Connect link permanently for this one-time transfer" },
+    { "id": "d", "text": "Enable S3 Transfer Acceleration and upload over the internet" }
+  ],
+  "correct": ["b"],
+  "explanation": "For large, one-time bulk transfers over limited bandwidth, AWS Snowball physically ships a rugged device to move terabytes to AWS quickly and cost-effectively, avoiding slow and costly internet transfers. A permanent Direct Connect link is overkill and costly for a one-time migration, and internet-based uploads would be too slow."
+},
+{
+  "id": "q063",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A non-critical internal application runs across three Availability Zones and uses a NAT gateway in each AZ, but the workload sends very little outbound traffic. The team wants to reduce NAT gateway costs while accepting slightly reduced resilience for this workload. What should the architect do?",
+  "options": [
+    { "id": "a", "text": "Use a single shared NAT gateway for all three Availability Zones" },
+    { "id": "b", "text": "Add a fourth NAT gateway for redundancy" },
+    { "id": "c", "text": "Replace NAT gateways with internet gateways in private subnets" },
+    { "id": "d", "text": "Remove all outbound internet access permanently" }
+  ],
+  "correct": ["a"],
+  "explanation": "For a non-critical workload with minimal outbound traffic, consolidating to a single shared NAT gateway reduces hourly and data processing charges from running one per AZ, at the cost of some cross-AZ resilience. Adding gateways increases cost, and internet gateways in private subnets would expose instances."
+},
+{
+  "id": "q064",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "single",
+  "correct_count": 1,
+  "question": "A company wants to identify underused and idle EC2 instances and receive right-sizing recommendations to lower compute costs. Which AWS tool provides these recommendations?",
+  "options": [
+    { "id": "a", "text": "AWS Compute Optimizer" },
+    { "id": "b", "text": "AWS CloudTrail" },
+    { "id": "c", "text": "Amazon GuardDuty" },
+    { "id": "d", "text": "AWS Config" }
+  ],
+  "correct": ["a"],
+  "explanation": "AWS Compute Optimizer analyzes utilization metrics and recommends optimal instance types and sizes (and other right-sizing actions) to reduce cost and improve performance. CloudTrail records API activity, GuardDuty detects threats, and Config tracks resource configuration—none provide right-sizing recommendations."
+},
+{
+  "id": "q065",
+  "domain": "Design Cost-Optimized Architectures",
+  "type": "multi",
+  "correct_count": 2,
+  "question": "An EC2-based application has a stable baseline of traffic 24/7 plus large, unpredictable spikes during business hours. The architect wants to minimize compute cost while handling spikes. Which TWO strategies together achieve this? (Select TWO.)",
+  "options": [
+    { "id": "a", "text": "Cover the steady baseline capacity with a Compute Savings Plan or Reserved Instances" },
+    { "id": "b", "text": "Handle the variable spike capacity with On-Demand (or Spot for fault-tolerant portions) via Auto Scaling" },
+    { "id": "c", "text": "Provision enough Reserved Instances to cover the maximum peak at all times" },
+    { "id": "d", "text": "Run all capacity on On-Demand Instances only" },
+    { "id": "e", "text": "Disable Auto Scaling and manually add instances each morning" }
+  ],
+  "correct": ["a", "b"],
+  "explanation": "A cost-optimal pattern covers the predictable 24/7 baseline with discounted Savings Plans or Reserved Instances and absorbs unpredictable spikes with On-Demand (or Spot where interruption-tolerant) through Auto Scaling. Buying Reserved capacity for peak wastes money during off-peak, all-On-Demand is costly, and manual scaling is error-prone."
+}
+];
+
+// ===================================================================
+// STATE
+// ===================================================================
+let currentQ      = 0;
+const answers     = {};          // idx -> array of selected option ids
+const flags       = new Set();   // flagged question indices
+let examActive    = false;
+let submitted     = false;
+let blurWarnings  = 0;
+let timeLeft      = EXAM.timeLimitSec;
+let timerInterval = null;
+let results       = null;
+
+// ===================================================================
+// START / RESET
+// ===================================================================
+function startExam() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('exam-ui').style.display = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'none';
+  examActive = true;
+  submitted  = false;
+  buildNavGrid();
+  renderQuestion(0);
+  updateHeaderCounts();
+  startTimer();
+  attachVisibilityListeners();
+  window.scrollTo(0, 0);
+}
+
+function resetExam() {
+  currentQ = 0;
+  for (const k in answers) delete answers[k];
+  flags.clear();
+  blurWarnings = 0;
+  timeLeft = EXAM.timeLimitSec;
+  submitted = false;
+  clearInterval(timerInterval);
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'none';
+  startExam();
+}
+
+// ===================================================================
+// TIMER
+// ===================================================================
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      autoSubmit('Time is up. Your exam has been submitted automatically.');
+    }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  const h = Math.floor(timeLeft / 3600);
+  const m = Math.floor((timeLeft % 3600) / 60);
+  const s = timeLeft % 60;
+  el.textContent = h > 0
+    ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if (timeLeft <= 300) el.classList.add('warning'); else el.classList.remove('warning');
+}
+
+// ===================================================================
+// RENDER QUESTION
+// ===================================================================
+function isAnswered(idx) {
+  const q = questions[idx];
+  const a = answers[idx] || [];
+  return a.length === q.correct_count && a.length > 0;
+}
+
+function renderQuestion(idx) {
+  currentQ = idx;
+  const q = questions[idx];
+  const sel = answers[idx] || [];
+  const isMulti = q.type === 'multi';
+
+  const optionsHtml = q.options.map(opt => {
+    const chosen = sel.includes(opt.id);
+    return `
+      <li class="option-item ${chosen ? 'selected' : ''}" onclick="selectOption(${idx}, '${opt.id}')">
+        <span class="opt-letter">${opt.id.toUpperCase()}</span>
+        <span class="opt-label">${escapeHtml(opt.text)}</span>
+      </li>`;
+  }).join('');
+
+  const multiNotice = isMulti
+    ? `<div class="multi-notice">⚠ Multiple response — select exactly ${q.correct_count} answers.</div>`
+    : '';
+
+  document.getElementById('question-container').innerHTML = `
+    <div class="question-card">
+      <div class="q-meta">
+        <span class="q-num-badge">Question ${idx + 1} of ${EXAM.total}</span>
+        <div class="q-tags">
+          <span class="domain-tag">${DOMAIN_SHORT[q.domain] || q.domain}</span>
+          ${isMulti ? '<span class="multi-tag">MULTI-SELECT</span>' : ''}
+        </div>
+      </div>
+      <div class="question-text">${escapeHtml(q.question)}</div>
+      ${multiNotice}
+      <ul class="options-list">${optionsHtml}</ul>
+    </div>`;
+
+  // Nav buttons state
+  document.getElementById('btn-prev').disabled = idx === 0;
+  document.getElementById('btn-next').disabled = idx === questions.length - 1;
+  const flagBtn = document.getElementById('btn-flag');
+  flagBtn.classList.toggle('flagged', flags.has(idx));
+  flagBtn.textContent = flags.has(idx) ? '⚑ Flagged' : '⚑ Flag for Review';
+
+  document.getElementById('mob-current').textContent = idx + 1;
+  updateNavGrid();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================================================================
+// SELECT OPTION
+// ===================================================================
+function selectOption(idx, optId) {
+  if (submitted) return;
+  const q = questions[idx];
+  let sel = answers[idx] ? answers[idx].slice() : [];
+
+  if (q.type === 'single') {
+    sel = [optId];
+  } else {
+    if (sel.includes(optId)) {
+      sel = sel.filter(x => x !== optId);           // toggle off
+    } else if (sel.length < q.correct_count) {
+      sel.push(optId);                               // add
+    } else {
+      // at limit: replace the earliest selection so the newest click registers
+      sel.shift();
+      sel.push(optId);
+    }
+  }
+  answers[idx] = sel;
+  renderQuestion(idx);
+  updateHeaderCounts();
+}
+
+// ===================================================================
+// NAVIGATION
+// ===================================================================
+function goToNext() { if (currentQ < questions.length - 1) renderQuestion(currentQ + 1); }
+function goToPrev() { if (currentQ > 0) renderQuestion(currentQ - 1); }
+function jumpTo(idx) { renderQuestion(idx); }
+
+function toggleFlag(idx) {
+  if (flags.has(idx)) flags.delete(idx); else flags.add(idx);
+  renderQuestion(idx);
+  updateHeaderCounts();
+}
+
+// ===================================================================
+// NAV GRID + STATS
+// ===================================================================
+function buildNavGrid() {
+  const grid = document.getElementById('nav-grid');
+  grid.innerHTML = questions.map((q, i) =>
+    `<button class="nav-btn" id="nav-${i}" onclick="jumpTo(${i})">${i + 1}</button>`
+  ).join('');
+}
+function updateNavGrid() {
+  questions.forEach((q, i) => {
+    const btn = document.getElementById('nav-' + i);
+    if (!btn) return;
+    btn.className = 'nav-btn';
+    if (isAnswered(i)) btn.classList.add('answered');
+    if (flags.has(i))  btn.classList.add('flagged-q');
+    if (i === currentQ) btn.classList.add('current');
+  });
+}
+function updateHeaderCounts() {
+  let answered = 0;
+  questions.forEach((q, i) => { if (isAnswered(i)) answered++; });
+  const unanswered = questions.length - answered;
+  document.getElementById('hdr-answered').textContent = `${answered}/${EXAM.total}`;
+  document.getElementById('hdr-flagged').textContent  = flags.size;
+  document.getElementById('stat-answered').textContent   = `${answered} / ${EXAM.total}`;
+  document.getElementById('stat-unanswered').textContent = unanswered;
+  document.getElementById('stat-flagged').textContent    = flags.size;
+  document.getElementById('mob-answered').textContent    = answered;
+  document.getElementById('progress-fill').style.width = `${(answered / questions.length) * 100}%`;
+  updateNavGrid();
+}
+
+// ===================================================================
+// SUBMIT
+// ===================================================================
+function trySubmit() {
+  let answered = 0;
+  questions.forEach((q, i) => { if (isAnswered(i)) answered++; });
+  const unanswered = questions.length - answered;
+  const body = document.getElementById('confirm-body');
+  body.innerHTML = unanswered > 0
+    ? `<div class="unanswered-list">You have <strong>${unanswered}</strong> unanswered question(s). Unanswered questions are marked incorrect.</div>Are you sure you want to submit? You cannot change your answers after submitting.`
+    : `All questions answered. Are you sure you want to submit? You cannot change your answers after submitting.`;
+  document.getElementById('confirm-modal').classList.add('show');
+}
+function closeModal()    { document.getElementById('confirm-modal').classList.remove('show'); }
+function confirmSubmit() { closeModal(); doSubmit(false); }
+
+function autoSubmit(msg) {
+  closeModal();
+  doSubmit(true);
+  if (msg) setTimeout(() => alert(msg), 100);
+}
+
+function arraysEqual(a, b) {
+  if (a.length !== b.length) return false;
+  const sa = a.slice().sort(), sb = b.slice().sort();
+  return sa.every((v, i) => v === sb[i]);
+}
+
+function doSubmit(auto) {
+  if (submitted && !auto) return;
+  submitted  = true;
+  examActive = false;
+  clearInterval(timerInterval);
+  removeVisibilityListeners();
+
+  let correct = 0;
+  const domainStats = {};
+  DOMAIN_ORDER.forEach(d => domainStats[d] = { correct: 0, total: 0 });
+  const qResults = [];
+
+  questions.forEach((q, idx) => {
+    const userAns   = answers[idx] || [];
+    const isCorrect = arraysEqual(userAns, q.correct);
+    if (isCorrect) correct++;
+    if (!domainStats[q.domain]) domainStats[q.domain] = { correct: 0, total: 0 };
+    domainStats[q.domain].total++;
+    if (isCorrect) domainStats[q.domain].correct++;
+    qResults.push({ idx, isCorrect, userAns });
+  });
+
+  const pct    = Math.round((correct / questions.length) * 100);
+  const scaled = Math.round(100 + (correct / questions.length) * 900);
+  const passed = scaled >= EXAM.passScaled;
+
+  results = { correct, total: questions.length, pct, scaled, passed, domainStats, qResults };
+  showResults(results);
+}
+
+// ===================================================================
+// RESULTS
+// ===================================================================
+function showResults(r) {
+  document.getElementById('exam-ui').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const badge = document.getElementById('result-badge');
+  badge.className = 'result-pass-badge ' + (r.passed ? 'badge-pass' : 'badge-fail');
+  badge.innerHTML = r.passed ? '✓ PASSED' : '✗ NOT PASSED';
+
+  const pctEl = document.getElementById('result-pct');
+  pctEl.className = 'result-pct ' + (r.passed ? 'pct-pass' : 'pct-fail');
+  pctEl.textContent = r.pct + '%';
+
+  document.getElementById('result-scaled').innerHTML =
+    `Scaled Score: <span>${r.scaled} / 1000</span> &nbsp;&middot;&nbsp; Pass: ${EXAM.passScaled}`;
+  document.getElementById('result-correct').innerHTML =
+    `<strong>${r.correct}</strong> of <strong>${r.total}</strong> questions correct`;
+
+  const rowsHtml = DOMAIN_ORDER.map(d => {
+    const s = r.domainStats[d] || { correct: 0, total: 0 };
+    const dp = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
+    let cls = 'dr-bad';
+    if (dp >= 72) cls = 'dr-good'; else if (dp >= 50) cls = 'dr-mid';
+    return `
+      <div class="domain-row-r">
+        <div class="dr-name">${DOMAIN_SHORT[d]}: ${d}</div>
+        <div class="dr-score">${s.correct}/${s.total}</div>
+        <div class="dr-pct ${cls}">${dp}%</div>
+      </div>`;
+  }).join('');
+  document.getElementById('domain-breakdown-rows').innerHTML = rowsHtml;
+  window.scrollTo(0, 0);
+}
+
+// ===================================================================
+// REVIEW MODE
+// ===================================================================
+function showReview() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('review-screen').style.display = 'block';
+
+  const html = questions.map((q, idx) => {
+    const userAns = (results.qResults[idx] && results.qResults[idx].userAns) || [];
+    const isCorrect = results.qResults[idx].isCorrect;
+
+    const optsHtml = q.options.map(opt => {
+      const isCorrectOpt = q.correct.includes(opt.id);
+      const isUserOpt    = userAns.includes(opt.id);
+      let cls = 'no-select';
+      let icon = '';
+      if (isCorrectOpt) { cls += ' correct-ans'; icon = '✓'; }
+      else if (isUserOpt) { cls += ' wrong-ans'; icon = '✗'; }
+      return `
+        <li class="option-item ${cls}">
+          <span class="opt-letter">${opt.id.toUpperCase()}</span>
+          <span class="opt-label">${escapeHtml(opt.text)}</span>
+          ${icon ? `<span class="opt-icon">${icon}</span>` : ''}
+        </li>`;
+    }).join('');
+
+    const userTxt = userAns.length
+      ? userAns.map(a => a.toUpperCase()).sort().join(', ')
+      : '— (unanswered)';
+    const correctTxt = q.correct.map(a => a.toUpperCase()).sort().join(', ');
+
+    return `
+      <div class="review-q-card ${isCorrect ? 'rq-correct' : 'rq-wrong'}">
+        <div class="rq-header">
+          <span class="q-num-badge">Question ${idx + 1}</span>
+          <span class="domain-tag">${DOMAIN_SHORT[q.domain]}</span>
+          ${q.type === 'multi' ? '<span class="multi-tag">MULTI-SELECT</span>' : ''}
+          <span class="rq-result-tag ${isCorrect ? 'rq-correct-tag' : 'rq-wrong-tag'}">${isCorrect ? '✓ Correct' : '✗ Incorrect'}</span>
+        </div>
+        <div class="question-text">${escapeHtml(q.question)}</div>
+        <ul class="options-list">${optsHtml}</ul>
+        <div style="margin-top:14px;font-size:13.5px;color:var(--text-2);">
+          Your answer: <strong style="color:${isCorrect ? 'var(--correct)' : 'var(--red)'}">${userTxt}</strong>
+          &nbsp;·&nbsp; Correct answer: <strong style="color:var(--correct)">${correctTxt}</strong>
+        </div>
+        <div class="explanation-box show">
+          <div class="exp-header">EXPLANATION</div>
+          <div class="exp-text">${escapeHtml(q.explanation)}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('review-wrapper').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+function backToResults() {
+  document.getElementById('review-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// ===================================================================
+// TAB-SWITCH DETECTION
+// ===================================================================
+function handleVisibilityChange() {
+  if (!examActive || submitted) return;
+  if (document.visibilityState === 'hidden' || document.hidden) {
+    blurWarnings++;
+    const remaining = EXAM.maxBlur - blurWarnings;
+    const msg = document.getElementById('blur-count-msg');
+    if (remaining > 0) {
+      msg.textContent = `Warning ${blurWarnings} of ${EXAM.maxBlur}. ${remaining} more warning(s) and your exam will be auto-submitted.`;
+    } else {
+      msg.textContent = `Maximum warnings reached. Your exam is being submitted now.`;
+    }
+    document.getElementById('blur-overlay').classList.add('show');
+    if (blurWarnings >= EXAM.maxBlur) {
+      setTimeout(() => {
+        document.getElementById('blur-overlay').classList.remove('show');
+        autoSubmit('Too many tab switches. Exam submitted automatically.');
+      }, 2500);
+    }
+  }
+}
+function attachVisibilityListeners() {
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('blur', handleVisibilityChange);
+}
+function removeVisibilityListeners() {
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+  window.removeEventListener('blur', handleVisibilityChange);
+}
+function returnToExam() {
+  document.getElementById('blur-overlay').classList.remove('show');
+}
+
+// ===================================================================
+// UTILITIES
+// ===================================================================
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Discourage copying / right-click during the exam
+document.addEventListener('contextmenu', e => { if (examActive) e.preventDefault(); });
+document.addEventListener('keydown', e => {
+  if (!examActive) return;
+  if (e.key === 'ArrowRight') goToNext();
+  if (e.key === 'ArrowLeft')  goToPrev();
+});
+</script>
+</body>
+</html>
